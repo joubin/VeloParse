@@ -7,6 +7,9 @@ The purpose of this project is to parse and visualize velodyne lidar readout
 import binascii
 import pickle
 import numpy as np
+import sys
+
+sys.path.append("..")  # To add the following two
 from pcapfile import savefile
 from Model import FireData
 
