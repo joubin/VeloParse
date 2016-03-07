@@ -6,6 +6,7 @@ The purpose of this project is to parse and visualize velodyne lidar readout
 """
 import binascii
 import pickle
+
 import numpy as np
 import sys
 
@@ -23,7 +24,7 @@ __email__ = "joubin.j@gmail.com"
 __status__ = "Development"
 
 
-def next_bytes(the_bytes, num) -> (object, object):
+def next_bytes(the_bytes: bytes, num: int) -> (object, object):
     # TODO right now this throws an error if there arent enough bytes to get
     # However, this was a design choice because numpy wont allow me to create an image with missing bytes
     # This is most likely going to create a bug.
@@ -33,7 +34,7 @@ def next_bytes(the_bytes, num) -> (object, object):
     return the_bytes[num:], the_bytes[0:num]
 
 
-def get_int_value(my_str) -> object:
+def get_int_value(my_str: bytes) -> int:
     # TODO replace this with the stuct.unpack with formatting for bytes of len 1,2 and 3. It already supports pairs of 4
     def custom_unpack(the_str):
         the_str = binascii.hexlify(the_str).decode()
@@ -51,7 +52,7 @@ def get_int_value(my_str) -> object:
     return custom_unpack(my_str)
 
 
-def get_rgb_by_int(rgb_int) -> (int, int, int):
+def get_rgb_by_int(rgb_int: int) -> (int, int, int):
     """
     given an integer, get it on the scale from rbg
     :param rgb_int:
@@ -60,7 +61,7 @@ def get_rgb_by_int(rgb_int) -> (int, int, int):
     return rgb_int & 255, (rgb_int >> 8) & 255, (rgb_int >> 16) & 255
 
 
-def read_pcap_raw(my_pcap_file='../test.pcap') -> [FireData]:
+def read_pcap_raw(my_pcap_file: str = '../test.pcap') -> [FireData]:
     """
     reads the pcap file and get raw content from it
     :param my_pcap_file:
@@ -81,33 +82,31 @@ def read_pcap_raw(my_pcap_file='../test.pcap') -> [FireData]:
                 fire_data_collection.append(FireData.FireData.create_with_date(data))
                 # fire_data_collection.append(fire_data)
         except ValueError:
+            # TODO this value error is caused because of packets being not containing
+            # exactly what the documentation claims
+            # FIX later
             pass
 
-            # print(fire_data)
-
     return fire_data_collection
-    # for fd in fire_data_collection:
-    #     for fd2 in fd:
-    #         print(fd2)
 
 
-def make_image(data=None):
+def make_image(data: list = None, image_name: str = "filename.png") -> None:
     import matplotlib.pyplot as plt
     if data is not None:
-        plt.imsave('filename.png', data)
+        plt.imsave(image_name, data)
     else:
-        plt.imsave('filename.png', np.arange(1 * 2048).reshape(1, 2048))
+        plt.imsave(image_name, np.arange(1 * 2048).reshape(1, 2048))
 
 
-def make_image2(data=None):
+def make_image2(data: list = None, image_name: str = "filename.png") -> None:
     from PIL import Image
     if data is None:
         data = np.arange(1 * 2048).reshape(1, 2048)
     img = Image.fromarray(data)
-    img.save('my.png')
+    img.save(image_name)
 
 
-def read_from_file(filename, limit=None) -> [FireData]:
+def read_from_file(filename: str, limit: int = None) -> [FireData]:
     with open(filename, 'rb') as myFile:
         lists2 = pickle.load(myFile)
     if limit is None:
@@ -116,18 +115,17 @@ def read_from_file(filename, limit=None) -> [FireData]:
         return lists2[0:limit]
 
 
-def save_to_file(content_to_write, file_path):
+def save_to_file(content_to_write: [FireData], file_path: str):
     with open(file_path, 'wb') as myFile:
         pickle.dump(content_to_write, myFile)
 
 
-def make_small_cached_file(lists2):
-    with open("dat2", 'wb') as myFile:
-        pickle.dump(lists2[0:1000], myFile)
+# def make_small_cached_file(lists2):
+#     with open("dat2", 'wb') as myFile:
+#         pickle.dump(lists2[0:1000], myFile)
 
 
 if __name__ == '__main__':
-
     contents = read_from_file('bin.min.dat')
     new_contents = []
     # print(type(contents))
