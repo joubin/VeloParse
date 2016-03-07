@@ -79,7 +79,7 @@ def make_image2(data=None):
     import numpy as np
     if data is None:
         data = np.arange(1 * 2048).reshape(1, 2048)
-    img = Image.fromarray(data, 'RGB')
+    img = Image.fromarray(data)
     img.save('my.png')
 
 
@@ -114,12 +114,15 @@ if __name__ == '__main__':
 
     for idx, item in enumerate(result):
         for other_idx, other_item in enumerate(item):
-            result[idx][other_idx] = get_rgb_by_int(other_item.intensity)
+            result[idx][other_idx] = other_item.intensity
 
+    # print(result.shape)
+    # print(result[0])
+    make_image(result)
     # for item in result:
     #     print(item)
 
-    make_image2(result)
+    # make_image2(result)
 
     # print(len(content))
     # content = read_from_file("dat2", 1000)
