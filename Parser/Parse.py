@@ -1,9 +1,8 @@
 import binascii
-
-import time
 from pcapfile import savefile
-
 from Model import FireData
+import pickle
+import numpy as np
 
 
 def next_bytes(the_bytes, num):
@@ -13,18 +12,19 @@ def next_bytes(the_bytes, num):
 
 
 def get_int_value(my_str):
-    def custom_unpack(my_str):
-        my_str = binascii.hexlify(my_str).decode()
-        my_str = ''.join(reversed([my_str[i:i + 2] for i in range(0, len(my_str), 2)]))
+    # TODO replace this with the stuct.unpack with formatting for bytes of len 1,2 and 3. It already supports pairs of 4
+    def custom_unpack(the_str):
+        the_str = binascii.hexlify(the_str).decode()
+        the_str = ''.join(reversed([the_str[i:i + 2] for i in range(0, len(the_str), 2)]))
         try:
-            return int(my_str, 16)
+            return int(the_str, 16)
         except TypeError as err:
             print(err.__traceback__())
             exit(10)
 
-    def with_unpack(my_str):
+    def with_unpack(the_str):
         import struct
-        return struct.unpack("<L", my_str)
+        return struct.unpack("<L", the_str)
 
     return custom_unpack(my_str)
 
@@ -38,8 +38,8 @@ def get_rgb_by_int(rgb_int):
     return rgb_int & 255, (rgb_int >> 8) & 255, (rgb_int >> 16) & 255
 
 
-def do_pcap_stuff():
-    testcap = open('../test.pcap', 'rb')
+def do_pcap_stuff(my_pcap_file='../test.pcap'):
+    testcap = open(my_pcap_file, 'rb')
     capfile = savefile.load_savefile(testcap, verbose=False)
     testcap.close()
     fire_data_collection = []
@@ -48,11 +48,11 @@ def do_pcap_stuff():
             packet, header = next_bytes(cap.raw(), 42)
             packet, payload = next_bytes(packet, 1206)
             packet, block_fire_data = next_bytes(payload, 1200)
-            fire_data = []
+            # fire_data = []
             for i in range(12):
                 block_fire_data, data = next_bytes(block_fire_data, 100)
-                fire_data.append(FireData.FireData.create_with_date(data))
-            fire_data_collection.append(fire_data)
+                fire_data_collection.append(FireData.FireData.create_with_date(data))
+                # fire_data_collection.append(fire_data)
         except ValueError:
             pass
 
@@ -67,7 +67,6 @@ def do_pcap_stuff():
 def make_image(data=None):
     import matplotlib.pyplot as plt
     import matplotlib.cm as cm
-    import numpy as np
     # data = [0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1]
     if data is not None:
         plt.imsave('filename.png', data)
@@ -78,8 +77,8 @@ def make_image(data=None):
 def make_image2(data=None):
     from PIL import Image
     import numpy as np
-    data = np.arange(1 * 2048).reshape(1, 2048)
-    print(data)
+    if data is None:
+        data = np.arange(1 * 2048).reshape(1, 2048)
     img = Image.fromarray(data, 'RGB')
     img.save('my.png')
 
@@ -104,12 +103,33 @@ def make_small_cached_file(lists2):
 
 
 if __name__ == '__main__':
-    import pickle
-    import numpy as np
 
-    content = read_from_file("dat2", 1000)
-    print(len(content))
+    contents = read_from_file('bin.min.dat')
+    new_contents = []
+    # print(type(contents))
+    for content in contents:
+        new_contents.append(content.lasers)
 
+    result = np.array(new_contents).reshape(32, 1000)
+
+    for idx, item in enumerate(result):
+        for other_idx, other_item in enumerate(item):
+            result[idx][other_idx] = get_rgb_by_int(other_item.intensity)
+
+    # for item in result:
+    #     print(item)
+
+    make_image2(result)
+
+    # print(len(content))
+    # content = read_from_file("dat2", 1000)
+    # # print(len(content))
+    # print(type(content))
+    # for i in content:
+    #     print(type(i))
+    #     for x in i:
+    #         print(type(x))
+    #         exit(0)
 
 
     # lists = None
