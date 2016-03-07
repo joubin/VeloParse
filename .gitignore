@@ -61,7 +61,7 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
-**dat**
+*.dat
 **.pcap
 .idea
 **.png
