@@ -1,8 +1,23 @@
+#!/usr/bin/env python
+"""
+This file is the main for this project. It houses some helper functions.
+
+The purpose of this project is to parse and visualize velodyne lidar readout
+"""
 import binascii
-from pcapfile import savefile
-from Model import FireData
 import pickle
 import numpy as np
+from pcapfile import savefile
+from Model import FireData
+
+__author__ = "Joubin Jabbari"
+__copyright__ = "Copyright 2016. Joubin Jabbari : jabbari.io"
+__credits__ = []
+__license__ = "GPL"
+__version__ = "0.0.1"
+__maintainer__ = "Joubin Jabbari"
+__email__ = "joubin.j@gmail.com"
+__status__ = "Development"
 
 
 def next_bytes(the_bytes, num) -> (object, object):
@@ -122,9 +137,10 @@ if __name__ == '__main__':
         for other_idx, other_item in enumerate(item):
             result[idx][other_idx] = other_item.intensity
 
+    make_image(result)
+
     # print(result.shape)
     # print(result[0])
-    make_image(result)
     # for item in result:
     #     print(item)
 
