@@ -23,7 +23,7 @@ class FireData(object):
         self.rotation = rotation
         self.lasers = lasers
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
 
         :return: a human readable string
@@ -48,7 +48,7 @@ class FireData(object):
         return self.__str__()
 
     @classmethod
-    def create_with_date(cls, data):
+    def create_with_date(cls, data) -> object:
         """
 
         :param data: is the raw 1200 bytes of the udp packet

@@ -58,7 +58,8 @@ def get_rgb_by_int(rgb_int: int) -> (int, int, int):
     :param rgb_int:
     :return:
     """
-    return rgb_int & 255, (rgb_int >> 8) & 255, (rgb_int >> 16) & 255
+    # return rgb_int & 255, (rgb_int >> 8) & 255, (rgb_int >> 16) & 255
+    return rgb_int, rgb_int, rgb_int
 
 
 def read_pcap_raw(my_pcap_file: str = '../test.pcap') -> [FireData]:

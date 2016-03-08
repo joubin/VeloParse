@@ -2,7 +2,7 @@ from Parser.Parse import get_int_value
 
 
 class Laser(object):
-    def __init__(self, distance, intensity):
+    def __init__(self, distance: int, intensity: int):
         self.distance = distance
         self.intensity = intensity
 
@@ -20,7 +20,7 @@ class Laser(object):
         return str(self.intensity)
 
     @classmethod
-    def create_from_hex_data(cls, distance, intensity):
+    def create_from_hex_data(cls, distance, intensity) -> object:
         distance = get_int_value(distance)
         intensity = get_int_value(intensity)
         return cls(distance, intensity)
